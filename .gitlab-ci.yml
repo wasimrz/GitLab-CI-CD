@@ -1,0 +1,27 @@
+stages:
+  - build
+
+main_server_staging:
+  stage: build
+  variables:
+    PROJECT_PATH: "/home/ubuntu/assignment"
+    ENV_PATH: "/home/ubuntu/env"
+    IP_ADDRESS_STAGING: "43.204.3.249"
+  tags:
+    - build
+  script:
+    - echo "Starting build 🛠️"
+    - sudo rsync -a --delete ./ $PROJECT_PATH --exclude=node_modules
+    - echo "PROJECT_PATH::" $PROJECT_PATH
+    - echo "ENV_PATH::" $ENV_PATH
+    - echo "IP_ADDRESS_STAGING:" $IP_ADDRESS_STAGING
+    - sudo cp $ENV_PATH/assignment/.env $PROJECT_PATH/
+    - sudo mkdir -m 777 public public/tmp public/files public/logs
+    - sudo npm install
+    - sudo pm2 restart 0
+    - echo "Completed build 🕺🏼"
+  environment:
+    name: staging
+    url: http://$IP_ADDRESS_STAGING
+  only:
+    - main
